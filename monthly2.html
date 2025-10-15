@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Payment Explainer (Mobile)</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #155c3c;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+    .diagram-container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        height: 360px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    svg {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+    }
+
+    line {
+        stroke: rgba(255,255,255,0.4);
+        stroke-width: 3;
+    }
+
+    .center-bubble {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        background-color: rgba(34,139,84,0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.3);
+        z-index: 10;
+    }
+
+    .center-bubble:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(34,139,84,0.4);
+    }
+
+    .center-bubble-text {
+        font-size: 16px;
+        line-height: 1.3;
+    }
+
+    .outer-bubble {
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        background-color: rgba(34,139,84,0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: white;
+        font-weight: bold;
+        font-size: 12px;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.2);
+    }
+
+    .outer-bubble:hover,
+    .highlighted {
+        transform: scale(1.12);
+        box-shadow: 0 0 25px 10px rgba(255,255,255,0.7);
+        background-color: rgba(50,205,120,0.9);
+        z-index: 20;
+    }
+
+    .definition-box {
+        background-color: rgba(34,139,84,0.6);
+        color: white;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 360px;
+        min-height: 110px;
+        max-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 15px;
+        box-shadow: 0 4px 15px rgba(34,139,84,0.3);
+        transition: all 0.3s ease;
+    }
+
+    .definition-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .definition-text {
+        font-size: 14px;
+        line-height: 1.4;
+        max-width: 320px;
+    }
+
+    .walkthrough-btn {
+        margin-top: 10px;
+        background-color: #1b784f;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        transition: 0.3s;
+    }
+
+    .walkthrough-btn:hover {
+        background-color: #21a166;
+    }
+
+    @media (max-height: 600px) {
+        body {
+            transform: scale(0.9);
+            transform-origin: top;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="diagram-container">
+        <svg id="svgLines"></svg>
+        <div class="center-bubble" id="centerBubble" data-key="payment">
+            <div class="center-bubble-text">Monthly<br>Mortgage<br>Payment</div>
+        </div>
+
+        <div class="outer-bubble" id="interest" data-key="interest">Interest</div>
+        <div class="outer-bubble" id="taxes" data-key="taxes">Taxes</div>
+        <div class="outer-bubble" id="hoi" data-key="hoi">Homeowners<br>Insurance</div>
+        <div class="outer-bubble" id="pmi" data-key="pmi">Private<br>Mortgage<br>Insurance</div>
+        <div class="outer-bubble" id="hoa" data-key="hoa">HOA<br>Fees</div>
+        <div class="outer-bubble" id="principal" data-key="principal">Principal</div>
+    </div>
+
+    <div class="definition-box" id="definitionBox">
+        <div class="definition-title">Monthly Mortgage Payment</div>
+        <div class="definition-text">Your total monthly cost for your home, combining all parts of your payment.</div>
+    </div>
+
+    <button class="walkthrough-btn" id="walkBtn">Walk me through it</button>
+
+    <script>
+        const definitions = {
+            payment: {
+                title: "Monthly Mortgage Payment",
+                text: "Your total monthly cost for your home, combining all parts of your payment."
+            },
+            principal: {
+                title: "Principal",
+                text: "The money that goes toward actually paying off your loan balance."
+            },
+            interest: {
+                title: "Interest",
+                text: "Extra money paid to the lender for borrowing the loan amount."
+            },
+            taxes: {
+                title: "Property Taxes",
+                text: "Money paid to your local government to fund schools and services."
+            },
+            hoi: {
+                title: "Homeowners Insurance",
+                text: "Protects your home and belongings from damage or loss."
+            },
+            pmi: {
+                title: "Mortgage Insurance",
+                text: "Protects the lender if you can’t make your mortgage payments."
+            },
+            hoa: {
+                title: "HOA Fees",
+                text: "Covers shared area upkeep like landscaping or community amenities."
+            }
+        };
+
+        // Position (rotated counterclockwise)
+        const positions = {
+            taxes: { angle: 0 },
+            hoi: { angle: 60 },
+            pmi: { angle: 120 },
+            hoa: { angle: 180 },
+            principal: { angle: 240 },
+            interest: { angle: 300 }
+        };
+
+        const container = document.querySelector('.diagram-container');
+        const svg = document.getElementById('svgLines');
+        const definitionBox = document.getElementById('definitionBox');
+        const walkBtn = document.getElementById('walkBtn');
+
+        function drawLines() {
+            svg.innerHTML = '';
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = 130;
+            const centerRadius = 60;
+            const outerRadius = 45;
+
+            Object.values(positions).forEach(pos => {
+                const angle = pos.angle * Math.PI / 180;
+                const startX = centerX + Math.cos(angle) * centerRadius;
+                const startY = centerY + Math.sin(angle) * centerRadius;
+                const endX = centerX + Math.cos(angle) * (radius - outerRadius);
+                const endY = centerY + Math.sin(angle) * (radius - outerRadius);
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', startX);
+                line.setAttribute('y1', startY);
+                line.setAttribute('x2', endX);
+                line.setAttribute('y2', endY);
+                svg.appendChild(line);
+            });
+        }
+
+        function positionBubbles() {
+            const centerX = container.offsetWidth / 2;
+            const centerY = container.offsetHeight / 2;
+            const radius = 130;
+
+            Object.keys(positions).forEach(key => {
+                const bubble = document.getElementById(key);
+                const pos = positions[key];
+                const angle = pos.angle * Math.PI / 180;
+                const bubbleSize = bubble.offsetWidth / 2;
+                const x = centerX + Math.cos(angle) * radius - bubbleSize;
+                const y = centerY + Math.sin(angle) * radius - bubbleSize;
+                bubble.style.left = x + 'px';
+                bubble.style.top = y + 'px';
+            });
+        }
+
+        function updateDefinition(key) {
+            const def = definitions[key];
+            definitionBox.innerHTML = `
+                <div class="definition-title">${def.title}</div>
+                <div class="definition-text">${def.text}</div>
+            `;
+        }
+
+        // Click listeners for bubbles
+        Object.keys(definitions).forEach(key => {
+            const el = document.getElementById(key) || (key === 'payment' ? centerBubble : null);
+            if (el) {
+                el.addEventListener('click', () => updateDefinition(key));
+            }
+        });
+
+        // Walkthrough logic
+        const bubbleOrder = ['principal', 'interest', 'taxes', 'hoi', 'pmi', 'hoa'];
+        let step = 0;
+        let inProgress = false;
+
+        walkBtn.addEventListener('click', () => {
+            if (!inProgress) {
+                inProgress = true;
+                walkBtn.textContent = "Next";
+                step = 0;
+                highlightBubble();
+            } else if (step < bubbleOrder.length - 1) {
+                step++;
+                highlightBubble();
+                if (step === bubbleOrder.length - 1) walkBtn.textContent = "Finish";
+            } else {
+                resetWalkthrough();
+            }
+        });
+
+        function highlightBubble() {
+            document.querySelectorAll('.outer-bubble').forEach(b => b.classList.remove('highlighted'));
+            const key = bubbleOrder[step];
+            const bubble = document.getElementById(key);
+            bubble.classList.add('highlighted');
+            updateDefinition(key);
+        }
+
+        function resetWalkthrough() {
+            inProgress = false;
+            step = 0;
+            walkBtn.textContent = "Walk me through it";
+            document.querySelectorAll('.outer-bubble').forEach(b => b.classList.remove('highlighted'));
+            updateDefinition('payment');
+        }
+
+        window.addEventListener('load', () => {
+            positionBubbles();
+            drawLines();
+        });
+
+        window.addEventListener('resize', () => {
+            positionBubbles();
+            drawLines();
+        });
+    </script>
+</body>
+</html>
