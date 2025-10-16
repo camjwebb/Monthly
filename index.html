@@ -18,9 +18,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        padding: 10px;
+        justify-content: center;
         overflow: hidden;
+        padding: 0 10px;
     }
 
     .diagram-container {
@@ -31,7 +31,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     svg {
@@ -40,7 +40,6 @@
         height: 100%;
         top: 0;
         left: 0;
-        pointer-events: none;
     }
 
     line {
@@ -62,8 +61,9 @@
         transition: all 0.3s ease;
         color: white;
         font-weight: bold;
+        font-size: 14px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.3);
-        z-index: 20;
+        z-index: 10;
     }
 
     .center-bubble-text {
@@ -87,14 +87,13 @@
         font-weight: bold;
         font-size: 12px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.2);
-        z-index: 20;
     }
 
     .highlighted {
         transform: scale(1.12);
         box-shadow: 0 0 25px 10px rgba(255,255,255,0.7);
         background-color: rgba(50,205,120,0.9);
-        z-index: 25;
+        z-index: 20;
     }
 
     .definition-box {
@@ -124,38 +123,13 @@
         font-size: 14px;
         line-height: 1.4;
         max-width: 340px;
-    }  
-
-    .next-btn {
-        margin-top: 10px;
-        background-color: #1b784f;
-        color: white;
-        border: none;
-        padding: 16px 40px;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: bold;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: 0.3s;
-        z-index: 100;
-    }
-
-    .next-btn:hover {
-        background-color: #21a166;
-    }
-
-    @media (max-height: 600px) {
-        body {
-            transform: scale(0.9);
-            transform-origin: top;
-        }
     }
 </style>
 </head>
 <body>
     <div class="diagram-container">
         <svg id="svgLines"></svg>
+
         <div class="center-bubble" id="centerBubble" data-key="payment">
             <div class="center-bubble-text">Monthly<br>Mortgage<br>Payment</div>
         </div>
@@ -172,8 +146,6 @@
         <div class="definition-title">Monthly Mortgage Payment</div>
         <div class="definition-text">Your total monthly cost for your home, combining all parts of your payment.</div>
     </div>
-
-    <button class="next-btn" id="nextBtn">Next</button>
 
     <script>
         const definitions = {
@@ -207,7 +179,7 @@
             }
         };
 
-        // Position
+        // Bubble positions
         const positions = {
             taxes: { angle: 0 },
             hoi: { angle: 60 },
@@ -220,11 +192,7 @@
         const container = document.querySelector('.diagram-container');
         const svg = document.getElementById('svgLines');
         const definitionBox = document.getElementById('definitionBox');
-        const nextBtn = document.getElementById('nextBtn');
-
-        // Walkthrough sequence
-        const walkthrough = ['payment', 'principal', 'interest', 'taxes', 'hoi', 'pmi', 'hoa'];
-        let currentStep = 1;
+        const centerBubble = document.getElementById('centerBubble');
 
         function drawLines() {
             svg.innerHTML = '';
@@ -274,71 +242,26 @@
             `;
         }
 
-        function highlightBubbles(key) {
-            // Remove all highlights
+        function setActiveBubble(key) {
             document.querySelectorAll('.outer-bubble, .center-bubble').forEach(b => b.classList.remove('highlighted'));
-            
-            // Highlight the current bubble
             const bubble = document.getElementById(key === 'payment' ? 'centerBubble' : key);
-            if (bubble) {
-                bubble.classList.add('highlighted');
-            }
-            
+            bubble.classList.add('highlighted');
             updateDefinition(key);
         }
 
         // Click listeners for all bubbles
-        document.getElementById('centerBubble').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('payment');
-            currentStep = (walkthrough.indexOf('payment') + 1) % walkthrough.length;
+        Object.keys(definitions).forEach(key => {
+            const el = document.getElementById(key === 'payment' ? 'centerBubble' : key);
+            if (el) {
+                el.addEventListener('click', () => setActiveBubble(key));
+            }
         });
 
-        document.getElementById('principal').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('principal');
-            currentStep = (walkthrough.indexOf('principal') + 1) % walkthrough.length;
-        });
-
-        document.getElementById('interest').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('interest');
-            currentStep = (walkthrough.indexOf('interest') + 1) % walkthrough.length;
-        });
-
-        document.getElementById('taxes').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('taxes');
-            currentStep = (walkthrough.indexOf('taxes') + 1) % walkthrough.length;
-        });
-
-        document.getElementById('hoi').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('hoi');
-            currentStep = (walkthrough.indexOf('hoi') + 1) % walkthrough.length;
-        });
-
-        document.getElementById('pmi').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('pmi');
-            currentStep = (walkthrough.indexOf('pmi') + 1) % walkthrough.length;
-        });
-
-        document.getElementById('hoa').addEventListener('click', function(e) {
-            e.stopPropagation();
-            highlightBubbles('hoa');
-            currentStep = (walkthrough.indexOf('hoa') + 1) % walkthrough.length;
-        });
-
-        nextBtn.addEventListener('click', () => {
-            highlightBubbles(walkthrough[currentStep]);
-            currentStep = (currentStep + 1) % walkthrough.length;
-        });
-
+        // Initialize on load
         window.addEventListener('load', () => {
             positionBubbles();
             drawLines();
-            highlightBubbles('payment');
+            setActiveBubble('payment');
         });
 
         window.addEventListener('resize', () => {
