@@ -18,9 +18,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: flex-start;
-        padding: 10px;
+        justify-content: center;
         overflow: hidden;
+        padding: 0 10px;
     }
 
     .diagram-container {
@@ -31,7 +31,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
 
     svg {
@@ -61,13 +61,9 @@
         transition: all 0.3s ease;
         color: white;
         font-weight: bold;
+        font-size: 14px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.3);
         z-index: 10;
-    }
-
-    .center-bubble:hover {
-        transform: scale(1.08);
-        box-shadow: 0 6px 20px rgba(34,139,84,0.4);
     }
 
     .center-bubble-text {
@@ -93,7 +89,6 @@
         box-shadow: 0 4px 15px rgba(34,139,84,0.2);
     }
 
-    .outer-bubble:hover,
     .highlighted {
         transform: scale(1.12);
         box-shadow: 0 0 25px 10px rgba(255,255,255,0.7);
@@ -106,9 +101,9 @@
         color: white;
         border-radius: 12px;
         text-align: center;
-        max-width: 360px;
+        width: 100%;
+        max-width: 380px;
         min-height: 110px;
-        max-height: 110px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -127,38 +122,15 @@
     .definition-text {
         font-size: 14px;
         line-height: 1.4;
-        max-width: 320px;
-    }
-
-    .walkthrough-btn {
-        margin-top: 10px;
-        background-color: #1b784f;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: bold;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        transition: 0.3s;
-    }
-
-    .walkthrough-btn:hover {
-        background-color: #21a166;
-    }
-
-    @media (max-height: 600px) {
-        body {
-            transform: scale(0.9);
-            transform-origin: top;
-        }
+        max-width: 340px;
+        white-space: nowrap;
     }
 </style>
 </head>
 <body>
     <div class="diagram-container">
         <svg id="svgLines"></svg>
+
         <div class="center-bubble" id="centerBubble" data-key="payment">
             <div class="center-bubble-text">Monthly<br>Mortgage<br>Payment</div>
         </div>
@@ -176,41 +148,39 @@
         <div class="definition-text">Your total monthly cost for your home, combining all parts of your payment.</div>
     </div>
 
-    <button class="walkthrough-btn" id="walkBtn">Walk me through it</button>
-
     <script>
         const definitions = {
             payment: {
                 title: "Monthly Mortgage Payment",
-                text: "Your total monthly cost for your home, combining all parts of your payment."
+                text: "Your total monthly cost for your home."
             },
             principal: {
                 title: "Principal",
-                text: "The money that goes toward actually paying off your loan balance."
+                text: "Money that goes toward paying off your house."
             },
             interest: {
                 title: "Interest",
-                text: "Extra money paid to the lender for borrowing the loan amount."
+                text: "Money paid to the lender for borrowing their money."
             },
             taxes: {
                 title: "Property Taxes",
-                text: "Money paid to your local government to fund schools and services."
+                text: "Money paid to the government for owning property."
             },
             hoi: {
                 title: "Homeowners Insurance",
-                text: "Protects your home and belongings from damage or loss."
+                text: "Money paid to protect your home from damage."
             },
             pmi: {
-                title: "Mortgage Insurance",
-                text: "Protects the lender if you can’t make your mortgage payments."
+                title: "Private Mortgage Insurance",
+                text: "Money paid to protect the lender from missed payments."
             },
             hoa: {
-                title: "HOA Fees",
-                text: "Covers shared area upkeep like landscaping or community amenities."
+                title: "Homeowners Association",
+                text: "Money paid to your HOA to maintain shared areas."
             }
         };
 
-        // Position (rotated counterclockwise)
+        // Bubble positions
         const positions = {
             taxes: { angle: 0 },
             hoi: { angle: 60 },
@@ -223,7 +193,7 @@
         const container = document.querySelector('.diagram-container');
         const svg = document.getElementById('svgLines');
         const definitionBox = document.getElementById('definitionBox');
-        const walkBtn = document.getElementById('walkBtn');
+        const centerBubble = document.getElementById('centerBubble');
 
         function drawLines() {
             svg.innerHTML = '';
@@ -273,53 +243,26 @@
             `;
         }
 
-        // Click listeners for bubbles
-        Object.keys(definitions).forEach(key => {
-            const el = document.getElementById(key) || (key === 'payment' ? centerBubble : null);
-            if (el) {
-                el.addEventListener('click', () => updateDefinition(key));
-            }
-        });
-
-        // Walkthrough logic
-        const bubbleOrder = ['principal', 'interest', 'taxes', 'hoi', 'pmi', 'hoa'];
-        let step = 0;
-        let inProgress = false;
-
-        walkBtn.addEventListener('click', () => {
-            if (!inProgress) {
-                inProgress = true;
-                walkBtn.textContent = "Next";
-                step = 0;
-                highlightBubble();
-            } else if (step < bubbleOrder.length - 1) {
-                step++;
-                highlightBubble();
-                if (step === bubbleOrder.length - 1) walkBtn.textContent = "Finish";
-            } else {
-                resetWalkthrough();
-            }
-        });
-
-        function highlightBubble() {
-            document.querySelectorAll('.outer-bubble').forEach(b => b.classList.remove('highlighted'));
-            const key = bubbleOrder[step];
-            const bubble = document.getElementById(key);
+        function setActiveBubble(key) {
+            document.querySelectorAll('.outer-bubble, .center-bubble').forEach(b => b.classList.remove('highlighted'));
+            const bubble = document.getElementById(key === 'payment' ? 'centerBubble' : key);
             bubble.classList.add('highlighted');
             updateDefinition(key);
         }
 
-        function resetWalkthrough() {
-            inProgress = false;
-            step = 0;
-            walkBtn.textContent = "Walk me through it";
-            document.querySelectorAll('.outer-bubble').forEach(b => b.classList.remove('highlighted'));
-            updateDefinition('payment');
-        }
+        // Click listeners for all bubbles
+        Object.keys(definitions).forEach(key => {
+            const el = document.getElementById(key === 'payment' ? 'centerBubble' : key);
+            if (el) {
+                el.addEventListener('click', () => setActiveBubble(key));
+            }
+        });
 
+        // Initialize on load
         window.addEventListener('load', () => {
             positionBubbles();
             drawLines();
+            setActiveBubble('payment');
         });
 
         window.addEventListener('resize', () => {
