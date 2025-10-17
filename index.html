@@ -14,26 +14,28 @@
     body {
         font-family: 'Arial', sans-serif;
         background-color: #155c3c;
-        min-height: 100vh;
+        height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px 10px;
-        overflow-x: hidden;
+        justify-content: center;
+        padding: 10px;
+        overflow: hidden;
     }
 
     .logo-link {
-        align-self: flex-start;
-        margin-bottom: 20px;
+        position: absolute;
+        top: 10px;
+        left: 10px;
         z-index: 100;
     }
 
     .logo-link img {
-        width: 80px;
-        height: 80px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid white;
+        border: 2px solid white;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
@@ -45,20 +47,20 @@
     .header-section {
         text-align: center;
         color: white;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         width: 100%;
         max-width: 600px;
     }
 
     .main-heading {
-        font-size: 32px;
+        font-size: 20px;
         font-weight: bold;
-        margin-bottom: 12px;
+        margin-bottom: 5px;
         line-height: 1.2;
     }
 
     .sub-heading {
-        font-size: 18px;
+        font-size: 13px;
         font-weight: normal;
         opacity: 0.9;
     }
@@ -69,17 +71,20 @@
         align-items: center;
         width: 100%;
         max-width: 1200px;
-        gap: 30px;
+        gap: 15px;
+        flex: 1;
+        justify-content: center;
     }
 
     .diagram-container {
         position: relative;
         width: 100%;
-        max-width: 500px;
-        height: 500px;
+        max-width: 280px;
+        height: 280px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
     }
 
     svg {
@@ -97,8 +102,8 @@
 
     .center-bubble {
         position: absolute;
-        width: 140px;
-        height: 140px;
+        width: 90px;
+        height: 90px;
         background-color: rgba(34,139,84,0.6);
         border-radius: 50%;
         display: flex;
@@ -109,20 +114,20 @@
         transition: all 0.3s ease;
         color: white;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 11px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.3);
         z-index: 10;
     }
 
     .center-bubble-text {
-        font-size: 18px;
-        line-height: 1.3;
+        font-size: 12px;
+        line-height: 1.2;
     }
 
     .outer-bubble {
         position: absolute;
-        width: 100px;
-        height: 100px;
+        width: 70px;
+        height: 70px;
         background-color: rgba(34,139,84,0.6);
         border-radius: 50%;
         display: flex;
@@ -133,7 +138,7 @@
         transition: all 0.3s ease;
         color: white;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 11px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.2);
     }
 
@@ -150,37 +155,66 @@
         border-radius: 12px;
         text-align: center;
         width: 100%;
-        max-width: 500px;
-        min-height: 120px;
+        max-width: 350px;
+        min-height: 85px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        padding: 20px;
+        padding: 12px 15px;
         box-shadow: 0 4px 15px rgba(34,139,84,0.3);
         transition: all 0.3s ease;
+        flex-shrink: 0;
     }
 
     .definition-title {
-        font-size: 24px;
+        font-size: 16px;
         font-weight: bold;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
 
     .definition-text {
-        font-size: 16px;
-        line-height: 1.5;
-        max-width: 450px;
+        font-size: 13px;
+        line-height: 1.4;
+        max-width: 320px;
     }
 
     /* Tablet styles */
     @media (min-width: 768px) {
+        body {
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .logo-link {
+            position: relative;
+            top: auto;
+            left: auto;
+            align-self: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .logo-link img {
+            width: 80px;
+            height: 80px;
+            border: 3px solid white;
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+        }
+
         .main-heading {
             font-size: 42px;
+            margin-bottom: 12px;
         }
 
         .sub-heading {
             font-size: 22px;
+        }
+
+        .content-wrapper {
+            gap: 30px;
         }
 
         .diagram-container {
@@ -196,6 +230,7 @@
 
         .center-bubble-text {
             font-size: 20px;
+            line-height: 1.3;
         }
 
         .outer-bubble {
@@ -206,14 +241,19 @@
 
         .definition-box {
             max-width: 600px;
+            min-height: 120px;
+            padding: 20px;
         }
 
         .definition-title {
             font-size: 28px;
+            margin-bottom: 10px;
         }
 
         .definition-text {
             font-size: 18px;
+            line-height: 1.5;
+            max-width: 450px;
         }
     }
 
@@ -245,55 +285,7 @@
         }
     }
 
-    /* Mobile small screens */
-    @media (max-width: 480px) {
-        .main-heading {
-            font-size: 26px;
-        }
-
-        .sub-heading {
-            font-size: 16px;
-        }
-
-        .diagram-container {
-            max-width: 360px;
-            height: 360px;
-        }
-
-        .center-bubble {
-            width: 110px;
-            height: 110px;
-            font-size: 14px;
-        }
-
-        .center-bubble-text {
-            font-size: 15px;
-        }
-
-        .outer-bubble {
-            width: 85px;
-            height: 85px;
-            font-size: 12px;
-        }
-
-        .definition-box {
-            min-height: 110px;
-            padding: 15px;
-        }
-
-        .definition-title {
-            font-size: 20px;
-        }
-
-        .definition-text {
-            font-size: 15px;
-        }
-
-        .logo-link img {
-            width: 60px;
-            height: 60px;
-        }
-    }
+    /* Mobile small screens - removed */
 
 </style>
 </head>
@@ -333,7 +325,7 @@
         const definitions = {
             payment: {
                 title: "Monthly Mortgage Payment",
-                text: "Your total monthly cost for your home, combining all parts of your payment."
+                text: "Your total monthly cost for your home."
             },
             principal: {
                 title: "Principal",
