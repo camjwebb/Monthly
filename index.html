@@ -45,8 +45,7 @@
     .header-section {
         text-align: center;
         color: white;
-        padding: 20px 80px 5px 80px;
-        margin-bottom: 10px;
+        padding: 20px 80px 0px 80px;
     }
 
     .main-heading {
@@ -67,8 +66,10 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-evenly;
+        justify-content: center;
         padding: 0 15px;
+        gap: 15px;
+        padding-top: 10px;
     }
 
     .diagram-container {
@@ -333,7 +334,7 @@
         const definitions = {
             payment: {
                 title: "Monthly Mortgage Payment",
-                text: "Your total monthly cost for your home."
+                text: "Your total monthly cost for your home, combining all parts of your payment."
             },
             principal: {
                 title: "Principal",
