@@ -28,7 +28,15 @@
         z-index: 100;
     }
 
-    .logo-link img {
+    .logo-link-right {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 100;
+    }
+
+    .logo-link img,
+    .logo-link-right img {
         width: 55px;
         height: 55px;
         border-radius: 50%;
@@ -37,7 +45,14 @@
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .logo-link img:hover {
+    .logo-link-right img {
+        background-color: white;
+        padding: 5px;
+        object-fit: contain;
+    }
+
+    .logo-link img:hover,
+    .logo-link-right img:hover {
         transform: scale(1.1);
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
     }
@@ -177,10 +192,19 @@
 
     /* Tablet styles */
     @media (min-width: 768px) {
-        .logo-link img {
+        .logo-link img,
+        .logo-link-right img {
             width: 70px;
             height: 70px;
             border: 3px solid white;
+        }
+
+        .logo-link-right img {
+            padding: 7px;
+        }
+
+        .logo-link-right img {
+            padding: 7px;
         }
 
         .header-section {
@@ -237,9 +261,18 @@
 
     /* Desktop styles */
     @media (min-width: 1024px) {
-        .logo-link img {
+        .logo-link img,
+        .logo-link-right img {
             width: 70px;
             height: 70px;
+        }
+
+        .logo-link-right img {
+            padding: 7px;
+        }
+
+        .logo-link-right img {
+            padding: 7px;
         }
 
         .header-section {
@@ -300,8 +333,12 @@
 </style>
 </head>
 <body>
-    <a href="https://homelordsystem.com/" target="_blank" class="logo-link">
-        <img src="https://media.licdn.com/dms/image/v2/D5603AQEaVFfvDSEKSw/profile-displayphoto-shrink_400_400/B56ZaHujaeGUAg-/0/1746033850383?e=1763596800&v=beta&t=ZpXEWUsnnJAWfec-CkK-8FTT3u8qXl7uANheBXKV82I" alt="Justin Midgley">
+    <a href="#" target="_blank" class="logo-link" id="leftLogoLink">
+        <img src="" alt="" id="leftLogoImg">
+    </a>
+
+    <a href="#" target="_blank" class="logo-link-right" id="rightLogoLink">
+        <img src="" alt="" id="rightLogoImg">
     </a>
 
     <div class="header-section">
@@ -332,6 +369,39 @@
     </div>
 
     <script>
+        // Logo Configuration - Edit these values to change the logos
+        const logoConfig = {
+            leftLogo: {
+                imageUrl: "https://media.licdn.com/dms/image/v2/D5603AQEaVFfvDSEKSw/profile-displayphoto-shrink_400_400/B56ZaHujaeGUAg-/0/1746033850383?e=1763596800&v=beta&t=ZpXEWUsnnJAWfec-CkK-8FTT3u8qXl7uANheBXKV82I",
+                linkUrl: "https://homelordsystem.com/",
+                altText: "Justin Midgley"
+            },
+            rightLogo: {
+                imageUrl: "https://houzd.com/wp-content/uploads/2023/05/Logo-1.png",
+                linkUrl: "https://houzd.com/loan-officer/cameron-webb/",
+                altText: "Cameron Webb"
+            }
+        };
+
+        // Apply logo configuration
+        function initializeLogos() {
+            // Left logo
+            const leftLogoLink = document.getElementById('leftLogoLink');
+            const leftLogoImg = document.getElementById('leftLogoImg');
+            leftLogoLink.href = logoConfig.leftLogo.linkUrl;
+            leftLogoImg.src = logoConfig.leftLogo.imageUrl;
+            leftLogoImg.alt = logoConfig.leftLogo.altText;
+
+            // Right logo
+            const rightLogoLink = document.getElementById('rightLogoLink');
+            const rightLogoImg = document.getElementById('rightLogoImg');
+            rightLogoLink.href = logoConfig.rightLogo.linkUrl;
+            rightLogoImg.src = logoConfig.rightLogo.imageUrl;
+            rightLogoImg.alt = logoConfig.rightLogo.altText;
+        }
+
+        // Initialize logos on page load
+        initializeLogos();
         const definitions = {
             payment: {
                 title: "Monthly Mortgage Payment",
@@ -459,6 +529,3 @@
     </script>
 </body>
 </html>
-
-
-
